@@ -3,35 +3,30 @@
 
 set -euo pipefail
 
-# Run personal superpowers setup
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-setup_output=$("${SCRIPT_DIR}/setup-personal-superpowers.sh" 2>&1 || echo "setup_failed=true")
+# Determine plugin root directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-# Use same directory resolution as setup script
-SUPERPOWERS_DIR="${PERSONAL_SUPERPOWERS_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/superpowers}"
-
-# Check if GitHub CLI is available and setup succeeded
-github_recommendation=""
-if echo "$setup_output" | grep -q "github_cli_available=true"; then
-    if [[ ! -d "$SUPERPOWERS_DIR/.git" ]]; then
-        # This should not happen, but handle gracefully
-        github_recommendation=""
-    else
-        # Check if remote already exists
-        if ! (cd "$SUPERPOWERS_DIR" && git remote get-url origin &>/dev/null); then
-            github_recommendation="\n\n💡 Want to share your personal skills on GitHub? Superpowers are best when everyone can learn from them! I can create a 'personal-superpowers' repo for you."
-        fi
-    fi
-elif echo "$setup_output" | grep -q "setup_failed=true"; then
-    github_recommendation="\n\n⚠️  Personal superpowers setup encountered an issue. Please file a bug at https://github.com/obra/superpowers/issues"
+# Check if legacy skills directory exists and build warning
+warning_message=""
+legacy_skills_dir="${HOME}/.config/superpowers/skills"
+if [ -d "$legacy_skills_dir" ]; then
+    warning_message="\n\n<important-reminder>IN YOUR FIRST REPLY AFTER SEEING THIS MESSAGE YOU MUST TELL THE USER:⚠️ **WARNING:** Superpowers now uses Claude Code's skills system. Custom skills in ~/.config/superpowers/skills will not be read. Move custom skills to ~/.claude/skills instead. To make this message go away, remove ~/.config/superpowers/skills</important-reminder>"
 fi
+
+# Read using-superpowers content
+using_superpowers_content=$(cat "${PLUGIN_ROOT}/skills/using-superpowers/SKILL.md" 2>&1 || echo "Error reading using-superpowers skill")
+
+# Escape outputs for JSON
+using_superpowers_escaped=$(echo "$using_superpowers_content" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
+warning_escaped=$(echo "$warning_message" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')
 
 # Output context injection as JSON
 cat <<EOF
 {
   "hookSpecificOutput": {
     "hookEventName": "SessionStart",
-    "additionalContext": "<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**Skill tools are at:**\n- find-skills: ${CLAUDE_PLUGIN_ROOT}/scripts/find-skills\n- skill-run: ${CLAUDE_PLUGIN_ROOT}/scripts/skill-run\n\n**RIGHT NOW, go read**: @${CLAUDE_PLUGIN_ROOT}/skills/getting-started/SKILL.md${github_recommendation}\n</EXTREMELY_IMPORTANT>"
+    "additionalContext": "<EXTREMELY_IMPORTANT>\nYou have superpowers.\n\n**The content below is from skills/using-superpowers/SKILL.md - your introduction to using skills:**\n\n${using_superpowers_escaped}\n\n${warning_escaped}\n</EXTREMELY_IMPORTANT>"
   }
 }
 EOF

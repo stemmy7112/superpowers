@@ -1,18 +1,19 @@
 # Superpowers
 
-Give Claude Code superpowers with a comprehensive skills library of proven techniques, patterns, and tools.
+A comprehensive skills library of proven techniques, patterns, and workflows for AI coding assistants.
 
 ## What You Get
 
 - **Testing Skills** - TDD, async testing, anti-patterns
 - **Debugging Skills** - Systematic debugging, root cause tracing, verification
 - **Collaboration Skills** - Brainstorming, planning, code review, parallel agents
-- **Meta Skills** - Creating, testing, and contributing skills
+- **Development Skills** - Git worktrees, finishing branches, subagent workflows
+- **Meta Skills** - Creating, testing, and sharing skills
 
 Plus:
-- **Slash Commands** - `/brainstorm`, `/write-plan`, `/execute-plan`
-- **Skills Search** - Grep-powered discovery of relevant skills
-- **Gap Tracking** - Failed searches logged for skill creation
+- **Slash Commands** - `/superpowers:brainstorm`, `/superpowers:write-plan`, `/superpowers:execute-plan`
+- **Automatic Integration** - Skills activate automatically when relevant
+- **Consistent Workflows** - Systematic approaches to common engineering tasks
 
 ## Learn More
 
@@ -20,20 +21,13 @@ Read the introduction: [Superpowers for Claude Code](https://blog.fsck.com/2025/
 
 ## Installation
 
-### Via Plugin Marketplace (Recommended)
+### Claude Code (via Plugin Marketplace)
 
 ```bash
 # In Claude Code
 /plugin marketplace add obra/superpowers-marketplace
 /plugin install superpowers@superpowers-marketplace
 ```
-
-That's it! On first session, the plugin automatically:
-- Sets up `~/.config/superpowers/` as your personal skills repository
-- Initializes git repo for version control
-- Makes core skills searchable alongside your personal skills
-- Adds `/brainstorm`, `/write-plan`, and `/execute-plan` commands
-- Offers to create public GitHub repo for sharing your skills
 
 ### Verify Installation
 
@@ -42,113 +36,89 @@ That's it! On first session, the plugin automatically:
 /help
 
 # Should see:
-# /brainstorm - Interactive design refinement
-# /write-plan - Create implementation plan
-# /execute-plan - Execute plan in batches
+# /superpowers:brainstorm - Interactive design refinement
+# /superpowers:write-plan - Create implementation plan
+# /superpowers:execute-plan - Execute plan in batches
 ```
+
+### Codex (Experimental)
+
+**Note:** Codex support is experimental and may require refinement based on user feedback.
+
+Tell Codex to fetch https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md and follow the instructions.
 
 ## Quick Start
-
-### Your Personal Skills
-
-Write your own skills to `~/.config/superpowers/skills/`:
-- All personal skills automatically discovered by search tools
-- Personal skills shadow core skills when names match
-- Version controlled with git
-- Optional: Share on GitHub and contribute back to core
-
-See `skills/meta/writing-skills` for how to create new skills.
-See `skills/meta/sharing-skills` for how to contribute to core.
-
-### Finding Skills
-
-Find both personal and core skills before starting any task:
-
-```bash
-${CLAUDE_PLUGIN_ROOT}/scripts/find-skills              # All skills with descriptions
-${CLAUDE_PLUGIN_ROOT}/scripts/find-skills test         # Filter by pattern
-${CLAUDE_PLUGIN_ROOT}/scripts/find-skills 'TDD|debug'  # Regex pattern
-```
 
 ### Using Slash Commands
 
 **Brainstorm a design:**
 ```
-/brainstorm
+/superpowers:brainstorm
 ```
 
 **Create an implementation plan:**
 ```
-/write-plan
+/superpowers:write-plan
 ```
 
 **Execute the plan:**
 ```
-/execute-plan
+/superpowers:execute-plan
 ```
+
+### Automatic Skill Activation
+
+Skills activate automatically when relevant. For example:
+- `test-driven-development` activates when implementing features
+- `systematic-debugging` activates when debugging issues
+- `verification-before-completion` activates before claiming work is done
 
 ## What's Inside
 
 ### Skills Library
 
 **Testing** (`skills/testing/`)
-- test-driven-development - RED-GREEN-REFACTOR cycle
-- condition-based-waiting - Async test patterns
-- testing-anti-patterns - Common pitfalls to avoid
+- **test-driven-development** - RED-GREEN-REFACTOR cycle
+- **condition-based-waiting** - Async test patterns
+- **testing-anti-patterns** - Common pitfalls to avoid
 
 **Debugging** (`skills/debugging/`)
-- systematic-debugging - 4-phase root cause process
-- root-cause-tracing - Find the real problem
-- verification-before-completion - Ensure it's actually fixed
-- defense-in-depth - Multiple validation layers
+- **systematic-debugging** - 4-phase root cause process
+- **root-cause-tracing** - Find the real problem
+- **verification-before-completion** - Ensure it's actually fixed
+- **defense-in-depth** - Multiple validation layers
 
 **Collaboration** (`skills/collaboration/`)
-- brainstorming - Socratic design refinement
-- writing-plans - Detailed implementation plans
-- executing-plans - Batch execution with checkpoints
-- dispatching-parallel-agents - Concurrent subagent workflows
-- remembering-conversations - Search past work
-- using-git-worktrees - Parallel development branches
-- requesting-code-review - Pre-review checklist
-- receiving-code-review - Responding to feedback
+- **brainstorming** - Socratic design refinement
+- **writing-plans** - Detailed implementation plans
+- **executing-plans** - Batch execution with checkpoints
+- **dispatching-parallel-agents** - Concurrent subagent workflows
+- **requesting-code-review** - Pre-review checklist
+- **receiving-code-review** - Responding to feedback
+- **using-git-worktrees** - Parallel development branches
+- **finishing-a-development-branch** - Merge/PR decision workflow
+- **subagent-driven-development** - Fast iteration with quality gates
 
 **Meta** (`skills/meta/`)
-- setting-up-personal-superpowers - Personal skills repository setup
-- writing-skills - TDD for documentation, create new skills
-- sharing-skills - Contribute skills back to core
-- testing-skills-with-subagents - Validate skill quality
-- gardening-skills-wiki - Maintain and improve skills
+- **writing-skills** - Create new skills following best practices
+- **sharing-skills** - Contribute skills back via branch and PR
+- **testing-skills-with-subagents** - Validate skill quality
+- **using-superpowers** - Introduction to the skills system
 
 ### Commands
 
-- **brainstorm.md** - Interactive design refinement using Socratic method
-- **write-plan.md** - Create detailed implementation plans
-- **execute-plan.md** - Execute plans in batches with review checkpoints
+All commands are thin wrappers that activate the corresponding skill:
 
-### Tools
-
-**In `scripts/` directory:**
-- **find-skills** - Unified skill discovery with descriptions (replaces list-skills + skills-search)
-- **skill-run** - Generic runner for any skill script (searches personal then core)
-
-**Skill-specific tools:**
-- **search-conversations** - Semantic search of past Claude sessions (in remembering-conversations skill)
-
-**Using scripts:**
-```bash
-${CLAUDE_PLUGIN_ROOT}/scripts/find-skills                 # Show all skills
-${CLAUDE_PLUGIN_ROOT}/scripts/find-skills pattern         # Search skills
-${CLAUDE_PLUGIN_ROOT}/scripts/skill-run <path> [args]     # Run any skill script
-```
+- **brainstorm.md** - Activates the `brainstorming` skill
+- **write-plan.md** - Activates the `writing-plans` skill
+- **execute-plan.md** - Activates the `executing-plans` skill
 
 ## How It Works
 
-1. **SessionStart Hook** - Auto-setup personal skills repo, inject core skills context
-2. **Two-Tier Skills** - Personal skills (`~/.config/superpowers/skills/`) + Core skills (plugin)
-3. **Skills Discovery** - `find-skills` searches both locations with descriptions
-4. **Shadowing** - Personal skills override core skills when paths match
-5. **Mandatory Workflow** - Skills become required when they exist for your task
-6. **Gap Tracking** - Failed searches logged to `~/.config/superpowers/search-log.jsonl`
+1. **SessionStart Hook** - Loads the `using-superpowers` skill at session start
+2. **Skills System** - Uses Claude Code's first-party skills system
+3. **Automatic Discovery** - Claude finds and uses relevant skills for your task
+4. **Mandatory Workflows** - When a skill exists for your task, using it becomes required
 
 ## Philosophy
 
@@ -158,49 +128,25 @@ ${CLAUDE_PLUGIN_ROOT}/scripts/skill-run <path> [args]     # Run any skill script
 - **Evidence over claims** - Verify before declaring success
 - **Domain over implementation** - Work at problem level, not solution level
 
-## Personal Superpowers Directory
-
-The plugin auto-creates your personal superpowers directory on first session.
-
-**Default location:** `~/.config/superpowers/`
-
-**Customize via environment variables:**
-```bash
-# Option 1: Set exact location
-export PERSONAL_SUPERPOWERS_DIR="$HOME/my-superpowers"
-
-# Option 2: Use XDG standard
-export XDG_CONFIG_HOME="$HOME/.local/config"  # Uses $HOME/.local/config/superpowers
-```
-
-**Structure:**
-```
-~/.config/superpowers/        # (or your custom location)
-├── .git/                     # Git repository
-├── .gitignore                # Ignores logs and indexes
-├── README.md                 # About your personal superpowers
-├── skills/                   # Your personal skills
-│   └── your-skill/
-│       └── SKILL.md
-├── search-log.jsonl          # Failed skill searches (not tracked)
-└── conversation-index/       # Indexed conversations (not tracked)
-```
-
-**Why git?** Track your skills evolution, share with others, contribute back to core.
-
 ## Contributing
 
-**Write personal skills:**
-1. Create in `~/.config/superpowers/skills/your-skill/`
-2. Follow TDD process in `skills/meta/writing-skills`
-3. Commit to your personal repo
+Skills live directly in this repository. To contribute:
 
-**Share with everyone:**
-1. Follow workflow in `skills/meta/sharing-skills`
-2. Fork → Branch → Copy → PR to core
-3. Keep personal version or delete after merge
+1. Fork the repository
+2. Create a branch for your skill
+3. Follow the `writing-skills` skill for creating new skills
+4. Use the `testing-skills-with-subagents` skill to validate quality
+5. Submit a PR
 
-**Missing a skill?** Edit `skills/REQUESTS.md` or open an issue
+See `skills/meta/writing-skills/SKILL.md` for the complete guide.
+
+## Updating
+
+Skills update automatically when you update the plugin:
+
+```bash
+/plugin update superpowers
+```
 
 ## License
 
